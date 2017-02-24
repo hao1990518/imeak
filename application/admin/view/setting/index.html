@@ -1,0 +1,182 @@
+{extend name="common/base" /}
+{block name="main"}
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>网站信息</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-refresh"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form id="myForm" class="form-horizontal" method="post" action="{:url('Setting/index')}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">网站名称</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="name" class="form-control" value="{$data['name']}" required="" placeholder="请输入网站名称">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">网站logo</label>
+
+                            <div class="col-sm-8">
+                                <div style="position: relative; display: inline-block;">
+                                    <img id="logo" src="{$data['logo']}" style="{:empty($data['logo'])?'display: none':''}">
+                                    <button class="btn btn-info" style="{:empty($data['logo'])?'':'display: none'}" id="select_pic">选择图片...</button>
+                                    <input type="file" id="fileElem" name="logo" accept="image/*" style="position: absolute; top:0; left: 0; width: 100%; height: 100%; opacity:0;filter: alpha(opacity=0); z-index: 4"  onchange="handleFiles(this)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">联系电话</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="tel" value="{$data['tel']}" class="form-control" placeholder="请输入联系电话">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">网站&nbsp;QQ</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="qq" value="{$data['qq']}" class="form-control" placeholder="请输入QQ号码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">网站邮箱</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="email" value="{$data['email']}" class="form-control" placeholder="请输入邮箱">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">联系地址</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="address" value="{$data['address']}" class="form-control" placeholder="请输入联系地址">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SEO标题</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="seo_title" value="{$data['seo_title']}" class="form-control" placeholder="请输入SEO标题">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SEO关键字</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="seo_keywords" value="{$data['seo_keywords']}" class="form-control" placeholder="请输入SEO关键字以‘,’号隔开">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">SEO描述</label>
+
+                            <div class="col-sm-8">
+                                <textarea class="form-control" name="seo_description" rows="5" placeholder="请输入SEO描述">{$data['seo_description']}</textarea>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">备案信息</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="record" value="{$data['record']}" class="form-control" placeholder="请输入备案信息">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">统计代码</label>
+
+                            <div class="col-sm-8">
+                                <textarea class="form-control" name="statistics" value="{$data['statistics']}" rows="5" placeholder="请输入统计代码"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">版权信息</label>
+
+                            <div class="col-sm-8">
+                                <textarea class="form-control" name="copyright" rows="5" placeholder="请输入统计代码">{$data['copyright']}</textarea>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存</button>
+                                <button class="btn btn-white reset" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{js href="/static/admin/js/jquery.from.js"}
+<script>
+    $(document).ready(function(){
+        //保存数据
+        $('#myForm').ajaxForm(function(re) {
+            if(re.code==1){
+                toastr.success(re.msg);
+            }else{
+                toastr.error(re.msg);
+            }
+        });
+    });
+
+    //图片上传浏览
+    window.URL = window.URL || window.webkitURL;
+    var fileElem = $("#fileElem");
+    function handleFiles(obj) {
+        var files = obj.files, img = new Image();
+        if(window.URL){
+            //File API
+            img.src = window.URL.createObjectURL(files[0]); //创建一个object URL，并不是你的本地路径
+            img.width = 200;
+            img.onload = function(e) {
+                window.URL.revokeObjectURL(this.src); //图片加载后，释放object URL
+            };
+            //单张
+            $('#logo').attr('src',img.src);
+            $('#logo').css('display','');
+            $('#select_pic').css('display','none');
+        }else if(window.FileReader){
+            //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+            var reader = new FileReader();
+            reader.readAsDataURL(files[0]);
+            reader.onload = function(e){
+                alert(files[0].name + "," +e.total + " bytes");
+                img.src = this.result;
+                img.width = 200;
+                //单张
+                $('#logo').attr('src',img.src);
+                $('#logo').css('display','');
+                $('#select_pic').css('display','none');
+            }
+        }else{
+            //ie
+            obj.select();
+            obj.blur();
+            var nfile = document.selection.createRange().text;
+            document.selection.empty();
+            img.src = nfile;
+            img.width = 200;
+            img.onload=function(){
+                alert(nfile+","+img.fileSize + " bytes");
+            }
+            //单张
+            $('#logo').attr('src',img.src);
+            $('#logo').css('display','');
+            $('#select_pic').css('display','none');
+        }
+    }
+</script>
+{/block}

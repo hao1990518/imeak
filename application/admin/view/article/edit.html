@@ -1,0 +1,283 @@
+{extend name="common/base" /}
+{block name="cssFile"}
+{css href="/static/admin/css/plugins/chosen/chosen.css"}
+{/block}
+{block name="main"}
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li class=""><a href="{:url('Article/index')}"><i class="fa fa-list"></i> 文章列表</a>
+                    </li>
+                    <li class=""><a href="{:url('Article/add')}" ><i class="fa fa-plus"></i> 新增文章</a>
+                    </li>
+                    <li class="active"><a href="javascript:;" ><i class="fa fa-edit"></i> 编辑文章 [{$data['title']}]</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab-1">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="ibox float-e-margins">
+                                        <div class="ibox-title">
+                                            <h5>编辑 <small>文章 [{$data['title']}]</small></h5>
+                                            <div class="ibox-tools">
+                                                <a class="collapse-link">
+                                                    <i class="fa fa-refresh"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <form id="myForm" class="form-horizontal" method="post" action="{:url('article/edit')}" enctype="multipart/form-data">
+                                                <input type="hidden" name="id" value="{$data['id']}">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">栏&nbsp;&nbsp;&nbsp;目</label>
+                                                    <div class="col-sm-8">
+                                                        <select data-placeholder="选择栏目" name="category_id[]" class="chosen-select" multiple style="width:350px;" tabindex="4">
+                                                            {volist name="category_list" id="vo"}
+                                                            <option value="{$vo['id']}" {:in_array($vo['id'],$data['category_id'])?'selected':''} hassubinfo="true">{$vo['name']}</option>
+                                                            {/volist}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">标&nbsp;&nbsp;&nbsp;题</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="title" class="form-control" value="{$data['title']}" placeholder="请输入标题" required="" maxlength="50">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">封&nbsp;面&nbsp;图</label>
+
+                                                    <div class="col-sm-8">
+                                                        <div style="position: relative; display: inline-block;">
+                                                            <img id="picture" src="{$data['picture']}" style="max-width: 200px; max-height: 100px; {:empty($data['picture'])?'display: none':''} ">
+                                                            <button class="btn btn-info" id="select_pic" style="{:empty($data['picture'])?'':'display: none'}">选择图片...</button>
+                                                            <input type="file" id="fileElem" name="picture" accept="image/*" style="position: absolute; top:0; left: 0; width: 100%; height: 100%; opacity:0;filter: alpha(opacity=0); z-index: 4"  onchange="handleFiles(this)">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">文章来源</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="source" value="{$data['source']}" class="form-control" placeholder="请输入文章来源">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">作&nbsp;&nbsp;&nbsp;者</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="author" value="{$data['author']}" class="form-control" placeholder="请输入作者">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">摘&nbsp;&nbsp;&nbsp;要</label>
+
+                                                    <div class="col-sm-8">
+                                                        <textarea name="abstract" class="form-control" rows="4" placeholder="请输入摘要">{$data['abstract']}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">状&nbsp;&nbsp;&nbsp;态</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="switch">
+                                                            <div class="onoffswitch">
+                                                                <input type="checkbox" name="status" class="onoffswitch-checkbox" id="example" {:empty($data['status'])?'':'checked'} >
+                                                                <label class="onoffswitch-label" for="example">
+                                                                    <span class="onoffswitch-inner"></span>
+                                                                    <span class="onoffswitch-switch"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">排&nbsp;&nbsp;&nbsp;序</label>
+
+                                                    <div class="col-sm-3">
+                                                        <input type="text" name="sort" value="{$data['sort']}" class="form-control" placeholder="越大越靠前" required="" pattern="^\d+$">
+                                                    </div>
+                                                    <label class="col-sm-2 control-label">发布时间</label>
+                                                    <div class="col-sm-3">
+                                                        <input style="height: 34px;" value="{:date('Y-m-d H:i:s',$data['release_dt'])}" readonly name="release_dt" placeholder="请选择日期" id="date_input" class="form-control laydate-icon">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">内&nbsp;&nbsp;&nbsp;容</label>
+                                                    <div class="col-sm-8">
+                                                        <script id="container" name="content" type="text/plain">{$data['content']}</script>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">更新时间</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" disabled value="{:date('Y-m-d H:i:s',$data['update_dt'])}">
+                                                    </div>
+                                                    <label class="col-sm-2 control-label">创建时间</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" disabled value="{:date('Y-m-d H:i:s',$data['create_dt'])}">
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <div class="col-sm-4 col-sm-offset-2">
+                                                        <button class="btn btn-primary" type="submit">保存</button>
+                                                        <button class="btn btn-white reset" type="reset">重置</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{js href="/static/admin/js/plugins/chosen/chosen.jquery.js"}
+{js href="/static/admin/js/jquery.from.js"}
+{js href="/static/admin/plugins/ueditor/ueditor.config.js"}
+{js href="/static/admin/plugins/ueditor/ueditor.all.js"}
+{js href="/static/plugins/laydate/laydate/laydate.js"}
+<script>
+    var option = {
+        elem: '#date_input', //需显示日期的元素选择器
+        event: 'click', //触发事件
+        format: 'YYYY-MM-DD hh:mm:ss', //日期格式
+        istime: true, //是否开启时间选择
+        isclear: true, //是否显示清空
+        istoday: true, //是否显示今天
+//        issure: true, //是否显示确认
+        festival: true, //是否显示节日
+//        min: '1900-01-01 00:00:00', //最小日期
+//        max: '2099-12-31 23:59:59', //最大日期
+//        start: '2014-6-15 23:00:00',    //开始日期
+//        fixed: false, //是否固定在可视区域
+//        zIndex: 99999999, //css z-index
+//        choose: function (dates) { //选择好日期的回调
+//        }
+    }
+    laydate(option);
+    //实例化编辑器
+    var ue = UE.getEditor('container',{
+        autoHeight: true,
+        autoWidth:true
+    });
+
+    $(document).ready(function(){
+        //保存数据
+        var options={
+//            target : '#output',    // 把服务器返回的内容放入id为output的元素中
+            beforeSubmit : showRequest,    // 提交前的回调函数
+            success : showResponse,    // 提交后的回调函数
+            // url : url,    //默认是form的action，如果申明，则会覆盖
+            // type : type,    // 默认值是form的method("GET" or "POST")，如果声明，则会覆盖
+             dataType : 'json'   // html（默认）、xml、script、json接受服务器端返回的类型
+            // clearForm : true,    // 成功提交后，清除所有表单元素的值
+            // resetForm : true,    // 成功提交后，重置所有表单元素的值
+//            timeout : 3000    // 限制请求的时间，当请求大于3秒后，跳出请求
+        }
+        $('#myForm').ajaxForm(options);
+
+        var config={
+            ".chosen-select":{},".chosen-select-deselect":{allow_single_deselect:!0},
+            ".chosen-select-no-single":{disable_search_threshold:10},
+            ".chosen-select-no-results":{no_results_text:"Oops, nothing found!"},
+            ".chosen-select-width":{width:"95%"}
+        };
+        for(var selector in config)$(selector).chosen(config[selector]);
+    });
+    // 提交前的回调函数
+    function showRequest(formData, jqForm, options){
+        layer.load(2, {shade: false});
+        // formData: 数组对象，提交表单时，form插件会以ajax方式自动提交这些数据，格式如[{name:user,value:val},{name:pwd,value:pwd}]
+        // jqForm: jQuery对象，封装了表单的元素
+        // options: options对象
+        if($(".chosen-select").val()==null){toastr.info('请选择栏目');return false;}
+        if($("input[name='title']").val()==""){toastr.info('标题不能为空');return false;}
+    }
+    // 提交后的回调函数
+    function showResponse(data){
+        // dataType=json
+        layer.closeAll();
+        if(data.code==1){
+            layer.confirm(data.msg, {
+                btn: ['前往列表','继续编辑'] //按钮
+            }, function(){
+                window.location.href="{:url('Article/index')}";
+            },function(){
+                window.location.reload();
+            });
+        }else{
+            toastr.error(data.msg);
+        }
+    }
+    //图片上传浏览
+    window.URL = window.URL || window.webkitURL;
+    var fileElem = $("#fileElem");
+    function handleFiles(obj) {
+        var files = obj.files, img = new Image();
+        if(window.URL){
+            //File API
+            img.src = window.URL.createObjectURL(files[0]); //创建一个object URL，并不是你的本地路径
+            img.width = 200;
+            img.onload = function(e) {
+                window.URL.revokeObjectURL(this.src); //图片加载后，释放object URL
+            };
+            //单张
+            $('#picture').attr('src',img.src);
+            $('#picture').css('display','');
+            $('#select_pic').css('display','none');
+//            $('#fileElem').css('display','none');
+            //多张
+//            fileList.appendChild(img);
+        }else if(window.FileReader){
+            //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+            var reader = new FileReader();
+            reader.readAsDataURL(files[0]);
+            reader.onload = function(e){
+                alert(files[0].name + "," +e.total + " bytes");
+                img.src = this.result;
+                img.width = 200;
+                //单张
+                $('#picture').attr('src',img.src);
+                $('#picture').css('display','');
+                $('#select_pic').css('display','none');
+//                $('#fileElem').css('display','none');
+                //多张
+//            fileList.appendChild(img);
+            }
+        }else{
+            //ie
+            obj.select();
+            obj.blur();
+            var nfile = document.selection.createRange().text;
+            document.selection.empty();
+            img.src = nfile;
+            img.width = 200;
+            img.onload=function(){
+                alert(nfile+","+img.fileSize + " bytes");
+            }
+            //单张
+            $('#picture').attr('src',img.src);
+            $('#picture').css('display','');
+            $('#select_pic').css('display','none');
+//            $('#fileElem').css('display','none');
+            //多张
+//            fileList.appendChild(img);
+        }
+    }
+</script>
+{/block}

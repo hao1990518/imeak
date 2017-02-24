@@ -1,0 +1,89 @@
+{extend name="common/base" /}
+{block name="cssFile"}
+{css href="/static/admin/css/plugins/sweetalert/sweetalert.css"}
+{/block}
+{block name="main"}
+	<div id="fh5co-main">
+		<div class="container">
+			<div class="row">
+				<div id="fh5co-board" data-columns>
+				</div>
+			</div>
+			<div class="row no_more" style="display: none;">
+				<p class="text-center">没有更多数据了...</p>
+			</div>
+        </div>
+	</div>
+	<div id="load_list" style="display: none">
+	</div>
+{/block}
+{block name="js"}
+{js href="/static/admin/js/plugins/sweetalert/sweetalert.min.js"}
+<script>
+	var page =1; //页码
+	var status = 1; //请求状态
+	var key_words = "";
+	//计算滚动条高度
+	$(function(){
+		var winHeight = window.innerHeight ? window.innerHeight : $(window).height(); // iphone fix
+		$(window).scroll(function(){
+			var closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 500);
+			if(closeToBottom){
+				create();
+			}
+		});
+
+		create();
+		$('#search').click(function(){
+			key_words = $('#key_words').val();
+			page = 1;
+			status =1;
+			$("#fh5co-board .column .item").remove();
+			create();
+		});
+	});
+
+	//获取数据
+	function getArticleList(){
+		$.post("{:url('Index/index')}",{'page':page,'key_words':key_words},function(re){
+			if(re.code==1){
+				$('#load_list').html(re.data);
+				page++;
+				status = 1;
+
+				if($("#fh5co-board .column .item").length==0){ //首次加载
+					$.each($("#load_list .item"),function(){
+						getList($("#fh5co-board .column")).append($(this));
+					});
+				};
+			}else{
+				$('.no_more').css('display','block');
+			}
+
+		});
+	}
+	//创建图片
+	function create(){
+		var list = $("#load_list .item");
+		if(list.length==0 && status==1) {
+			status=0;
+			getArticleList();
+		}
+		getList($("#fh5co-board .column")).append(list[0]);
+	}
+
+	//获取li列表并对比，高度小的就添加一张图片
+	function getList(obj){
+		var length = obj.length;
+		var h = Infinity; //无限高
+		var getList; //获取li列表
+		for(var i =0; i <length; i++){
+			if(obj.eq(i).height()<h){
+				h = obj.eq(i).height();
+				getList = obj.eq(i);
+			}
+		}
+		return getList;
+	}
+</script>
+{/block}

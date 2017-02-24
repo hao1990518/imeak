@@ -1,0 +1,176 @@
+{extend name="common/base" /}
+{block name="cssFile"}
+{css href="/static/admin/css/plugins/datapicker/datepicker3.css"}
+<style>
+    .corner{margin-bottom: 158px;margin-right: -2px;}
+</style>
+{/block}
+{block name="main"}
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>文件 <small>列表</small></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-refresh"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="file-manager">
+                        <h5>选择时间段：(默认最后7天内文件)</h5>
+                        <div class="input-daterange input-group" id="datepicker">
+                            <input type="text" class="input-sm form-control" name="start" value="{$data['min_folder']}" />
+                            <span class="input-group-addon">到</span>
+                            <input type="text" class="input-sm form-control" name="end" value="{$data['max_folder']}" />
+                        </div>
+                        <button class="btn btn-primary btn-block search" style="margin-top: 5px;">搜索</button>
+                        <div class="hr-line-dashed"></div>
+                        <h5>文件夹</h5>
+                        <ul class="folder-list" style="padding: 0">
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 animated fadeInRight">
+            <div class="row">
+                <div class="col-sm-12" id="list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{js href="/static/admin/js/content.min.js"}
+{js href="/static/admin/js/plugins/datapicker/bootstrap-datepicker.js"}
+<script>
+    $(document).ready(function(){
+        $(".input-daterange").datepicker({keyboardNavigation:!1,forceParse:!1,autoclose:!0});
+        get_folder();
+        $('.search').on('click',function(){
+            get_folder();
+        });
+    });
+
+    //获取文件夹列表
+    function get_folder(){
+        var start = $("input[name='start']").val();
+        var end = $("input[name='end']").val();
+
+        $.post("{:url('Files/index')}",{'start':start,'end':end},function(re){
+            var html ='没有相关数据';
+            if(re.data!=""){
+                var html ='';
+                $.each(re.data,function(k,v){
+                    html += '<li>';
+                    html += '<div class="col-sm-9">';
+                    html += '<a href="javascript:;"  tag="folder">';
+                    html += '<i class="fa fa-folder"></i>'+v;
+                    html += '</a>';
+                    html += '</div>';
+                    html += '<a class="del" val="'+v+'"><i class="fa fa-times"></i></a>';
+                    html += '</li>';
+                });
+            }
+            $('.folder-list').html(html);
+
+            //绑定方法
+            $("a[tag='folder']").on('click',function(){
+                var name = $(this).text();
+                get_file(name);
+            });
+            $('.del').click(function(){
+                var val = $(this).attr('val');
+                layer.confirm('确定要删除这个文件夹？', {
+                    btn: ['删除','取消'] //按钮
+                }, function(){
+                    layer.closeAll();
+                    $.post("{:url('Files/deleteFolder')}",{'name':val},function(re){
+                        if(re.code==1){
+                            $('a[val="'+val+'"]').parents('li').remove();
+                            toastr.success(re.msg);
+                        }else{
+                            toastr.error(re.msg);
+                        }
+                        layer.closeAll();
+                    });
+                });
+            });
+
+        });
+    }
+
+    //获取文件列表
+    function get_file(name){
+        $.post("{:url('Files/getFile')}",{'name':name},function(re){
+            if(re.code==1){
+                $('#list').html(re.data);
+                init();
+            }else{
+                layer.msg(re.msg);
+                $('#list').html(re.msg);
+            }
+
+        });
+    }
+    //删除方法
+    function delete_init(){
+        $('.corner').click(function(){
+            var val = $(this).attr('val');
+            var key = $(this).attr('key');
+            layer.confirm('确定要删除这个文件？', {
+                btn: ['删除','取消'] //按钮
+            }, function(){
+                layer.closeAll();
+                $.post("{:url('Files/delete')}",{'url':val},function(re){
+                    if(re.code==1){
+                        $('div[tag="file'+key+'"]').remove();
+                        toastr.success(re.msg);
+                    }else{
+                        toastr.error(re.msg);
+                    }
+                    layer.closeAll();
+                });
+            });
+        });
+    }
+
+    //查看大图
+    function view_init(){
+        $('.image').on('click',function(){
+            var url = $(this).find('img').attr('src');
+            layer.open({
+                type: 1,
+                title: false,
+                area: ['auto', 'auto'],
+                closeBtn: [0, true],
+                shadeClose:true,
+                content: '<img style="max-height:720px;max-width:1028px;" src="'+url+'">'
+            });
+        });
+    }
+
+    /**
+     * 初始化文件列表
+     */
+    function init(){
+        $(".file-box").each(function(){
+            animationHover(this,"pulse");
+        });
+        $('.file-box').mouseover(function(){
+            $(this).find('.corner').css('display','block');
+        });
+        $('.file-box').mouseout(function(){
+            $(this).find('.corner').css('display','none');
+        });
+        delete_init();
+        view_init();
+    }
+</script>
+{/block}

@@ -1,0 +1,158 @@
+{extend name="common/base" /}
+{block name="main"}
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="javascript:;"><i class="fa fa-list"></i> 菜单列表</a>
+                    </li>
+                    <li class=""><a href="{:url('Menu/add')}" ><i class="fa fa-plus"></i> 新增菜单</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab-1">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="ibox float-e-margins">
+                                        <div class="ibox-title">
+                                            <h5>菜单 <small>列表</small></h5>
+                                            <div class="ibox-tools">
+                                                <a class="collapse-link">
+                                                    <i class="fa fa-refresh"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="ibox-content">
+                                            <p class="m-b-lg">
+                                                图标颜色解释：
+                                                <span class="label label-info"><i class="fa fa-eye"></i></span>：正常&nbsp;&nbsp;&nbsp;
+                                                <span class="label label-warning"><i class="fa fa-eye"></i></span>：正常&nbsp;&nbsp;&nbsp;
+                                                <span class="label label-danger"><i class="fa fa-eye-slash"></i></span>：禁用
+                                            </p>
+                                            <div class="dd" id="nestable">
+                                                <ol class="dd-list">
+                                                    {volist name="data" key="k" id="vo"}
+                                                    <li class="dd-item" data-id="{$vo['id']}">
+                                                        <div class="dd-handle">
+                                                            <span class="pull-right">
+                                                                <a href="javascript:;" class="del" did="{$vo['id']}" uname="{$vo['name']}"><i class="fa fa-remove"></i></a>
+                                                            </span>
+                                                            {if condition="$vo['status']"}
+                                                            <span class="label {:empty($k%2)?'label-warning':'label-info'}"><i class="fa {$vo['ico']}"></i></span>
+                                                            {else/}
+                                                            <span class="label label-danger"><i class="fa fa-eye-slash"></i></span>
+                                                            {/if}
+                                                            <a href="{:url('Menu/edit',['id'=>$vo['id']])}">{$vo['name']}</a> <span style="margin-left: 10px;color: #A7B1C2">{$vo['url']}</span>
+                                                        </div>
+                                                        {if condition="!empty($vo['son'])"}
+                                                        <ol class="dd-list">
+                                                            {volist name="vo['son']" id="vv"}
+                                                            <li class="dd-item" data-id="{$vv['id']}">
+                                                                <div class="dd-handle">
+                                                                    <span class="pull-right">
+                                                                        <a href="javascript:;" class="del" did="{$vv['id']}" uname="{$vv['name']}"><i class="fa fa-remove"></i></a>
+                                                                    </span>
+                                                                    {if condition="$vo['status'] && $vv['status']"}
+                                                                    <span class="label {:empty($k%2)?'label-warning':'label-info'}"><i class="fa fa-cog"></i></span>
+                                                                    {else/}
+                                                                    <span class="label label-danger"><i class="fa fa-eye-slash"></i></span>
+                                                                    {/if}
+                                                                    <a href="{:url('Menu/edit',['id'=>$vv['id']])}">{$vv['name']}</a> <span style="margin-left: 10px;color: #A7B1C2">{$vv['url']}</span>
+                                                                </div>
+                                                                    {if condition="!empty($vv['son'])"}
+                                                                    <ol class="dd-list">
+                                                                        {volist name="vv['son']" id="vs"}
+                                                                        <li class="dd-item" data-id="{$vs['id']}">
+                                                                            <div class="dd-handle">
+                                                                        <span class="pull-right">
+                                                                            <a href="javascript:;" class="del" did="{$vs['id']}" uname="{$vs['name']}"><i class="fa fa-remove"></i></a>
+                                                                        </span>
+                                                                                {if condition="$vo['status'] && $vv['status']"}
+                                                                                <span class="label {:empty($k%2)?'label-warning':'label-info'}"><i class="fa fa-cog"></i></span>
+                                                                                {else/}
+                                                                                <span class="label label-danger"><i class="fa fa-eye-slash"></i></span>
+                                                                                {/if}
+                                                                                <a href="{:url('Menu/edit',['id'=>$vs['id']])}">{$vs['name']}</a> <span style="margin-left: 10px;color: #A7B1C2">{$vs['url']}</span>
+                                                                            </div>
+                                                                        </li>
+                                                                        {/volist}
+                                                                    </ol>
+                                                                    {/if}
+                                                            </li>
+                                                            {/volist}
+                                                        </ol>
+                                                        {/if}
+                                                    </li>
+                                                    {/volist}
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{js href="/static/admin/js/plugins/nestable/jquery.nestable.js"}
+<script>
+    $(document).ready(function(){
+        var updateOutput=function(e){
+            var list=e.length?e:$(e.target), output=list.data("output");
+            if(window.JSON){
+                output.val(window.JSON.stringify(list.nestable("serialize")))
+            }else{
+                output.val("浏览器不支持")}
+        };
+        $("#nestable").nestable({
+            group:0, //允许在列表之间 拖动 的 组ID（默认0）
+            maxDepth:3, //树节点层次（默认5）
+        }).on("change",updateOutput);
+        updateOutput($("#nestable").data("output",$("#nestable-output")));
+        $("#nestable-menu").on("click",function(e){
+            var target=$(e.target),action=target.data("action");
+            if(action==="expand-all"){
+                $(".dd").nestable("expandAll")
+            }
+            if(action==="collapse-all"){
+                $(".dd").nestable("collapseAll")
+            }
+        });
+        $('.del').click(function(){
+            var id = $(this).attr('did');
+            var name = $(this).attr('uname');
+            del(id,name);
+        });
+    });
+    //删除
+    function del(id,name){
+        if(id && id > 0){
+            layer.confirm('确定要删除菜单['+name+']？', {
+                btn: ['删除','取消'] //按钮
+            }, function(){
+                layer.closeAll();
+                $.post("{:url('Menu/delete')}",{'id':id},function(re){
+                    if(re.code==1){
+                        layer.closeAll();
+                        toastr.success(re.msg);
+                        window.location.reload();
+                    }else{
+                        layer.closeAll();
+                        toastr.error(re.msg);
+                    }
+                });
+            });
+        }else{
+            toastr.error('非法操作');
+        }
+    }
+</script>
+{/block}

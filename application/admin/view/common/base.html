@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<!-- Mirrored from www.zi-han.net/theme/hplus/index_v1.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:18:23 GMT -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--360浏览器优先以webkit内核解析-->
+    <title>H+ 后台主题UI框架 - 主页示例</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    {css href="/static/admin/css/bootstrap.min.css" /}
+    {css href="/static/admin/css/font-awesome.min.css" /}
+    {block name="cssFile"}{/block}
+    {css href="/static/admin/css/animate.min.css" /}
+    {css href="/static/admin/css/style.min.css" /}
+    {css href="/static/admin/css/plugins/toastr/toastr.min.css" /}
+    <style>
+        a,a:link, a:visited,a:hover, a:active {
+            color:#676A6C;
+            text-decoration:none;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+{block name="main"}{/block}
+
+{js href="/static/admin/js/jquery.min.js" /}
+{js href="/static/admin/js/bootstrap.min.js" /}
+{js href="/static/admin/js/plugins/layer/layer.min.js" /}
+{js href="/static/admin/js/plugins/layer/extend/layer.ext.js" /}
+{js href="/static/admin/js/contabs.min.js" /}
+{js href="/static/admin/js/plugins/toastr/toastr.min.js" /}
+<script>
+    $(document).ready(function(){
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "onclick": null,
+            "showDuration": "400",
+            "hideDuration": "1000",
+            "timeOut": "7000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        $('.fa-refresh').on('click',function(){
+            window.location.reload();
+        });
+    });
+</script>
+{block name="js"}{/block}
+</body>
+</html>

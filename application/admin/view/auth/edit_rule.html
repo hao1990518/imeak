@@ -1,0 +1,116 @@
+{extend name="common/base" /}
+{block name="main"}
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li class=""><a href="{:url('Auth/rule')}"><i class="fa fa-list"></i> 节点列表</a>
+                    </li>
+                    <li class=""><a href="{:url('Auth/addRule')}" ><i class="fa fa-plus"></i> 新增节点</a>
+                    </li>
+                    <li class="active"><a href="javascript:;" ><i class="fa fa-edit"></i> 编辑节点[{$data['name']}]</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab-1">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="ibox float-e-margins">
+                                        <div class="ibox-title">
+                                            <h5>编辑 <small>节点[{$data['title']}]</small></h5>
+                                            <div class="ibox-tools">
+                                                <a class="collapse-link">
+                                                    <i class="fa fa-refresh"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <form class="form-horizontal">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">名&nbsp;&nbsp;&nbsp;称</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="name" class="form-control" value="{$data['name']}" required="" placeholder="请输入名称" maxlength="50">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">标&nbsp;&nbsp;&nbsp;题</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="title" class="form-control" value="{$data['title']}" required="" placeholder="请输入标题" maxlength="50">
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">状&nbsp;&nbsp;&nbsp;态</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="switch">
+                                                            <div class="onoffswitch">
+                                                                <input type="checkbox" class="onoffswitch-checkbox" id="example" {$data['status']?'checked':''} >
+                                                                <label class="onoffswitch-label" for="example">
+                                                                    <span class="onoffswitch-inner"></span>
+                                                                    <span class="onoffswitch-switch"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <div class="col-sm-4 col-sm-offset-2">
+                                                        <button class="btn btn-primary" type="submit">保存</button>
+                                                        <a href="{:url('auth/rule')}" class="btn btn-white" type="button">取消</a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+<script>
+    $(document).ready(function(){
+        $('form').on('submit',function(){
+            if($("input[name='name']").val()==""){toastr.info('名称不能为空');return false;}
+            if($("input[name='title']").val()==""){toastr.info('标题不能为空');return false;}
+            var status = 0;
+            if($('#example').is(':checked')){
+                status =1;
+            }
+            $.ajax({
+                type:'post',
+                dataType:'json',
+                data:{'id':"{$data['id']}",'name':$("input[name='name']").val(),'title':$("input[name='title']").val(),'status':status},
+                url:"{:url('Auth/editRule')}",
+                success:function(re){
+                    if(re.code==1){
+                        layer.confirm(re.msg, {
+                            btn: ['前往列表','继续编辑'] //按钮
+                        }, function(){
+                            window.location.href="{:url('Auth/rule')}";
+                        },function(){
+                            window.location.reload();
+                        });
+                    }else{
+                        toastr.error(re.msg);
+                    }
+                },
+                error:function(){
+                    toastr.warning('请稍后再试或联系管理员','网络错误');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{/block}

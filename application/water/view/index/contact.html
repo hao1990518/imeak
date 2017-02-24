@@ -1,0 +1,86 @@
+{extend name="common/base" /}
+{block name="cssFile"}
+{css href="/static/admin/css/plugins/sweetalert/sweetalert.css"}
+{/block}
+{block name="main"}
+<div id="fh5co-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>联系我们</h2>
+                <div class="fh5co-spacer fh5co-spacer-sm"></div>
+                <form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="name" placeholder="称呼">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="qq" placeholder="qq">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="tel" placeholder="电话">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="email" class="form-control" naem="email" placeholder="邮箱">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <textarea id="message" name="content" cols="30" class="form-control" rows="10" placeholder="请在此填写您的需求"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="text" placeholder="验证码" name="verify_code" class="form-control" required="">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <img id="verify_img" src="{:url('water/index/getcode')}" style="cursor: pointer;" onclick="refreshVerify()"  alt="captcha" title="点击刷新">
+                                    </div>
+                                    <div class="col-md-5">
+                                    <input type="button" class="btn btn-primary" onclick="send()" value="发送消息">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{js href="/static/admin/js/plugins/sweetalert/sweetalert.min.js"}
+<script>
+    function send(){
+        if($("input[name='name']").val()==""){swal({title:"称呼",text:"不能为空",type:"warning"}); return false;}
+        if($("input[name='tel']").val()==""){swal({title:"电话",text:"不能为空",type:"warning"}); return false;}
+        if($("textarea[name='content']").val()==""){swal({title:"内容",text:"不能为空",type:"warning"}); return false;}
+        if($("input[name='verify_code']").val()==""){swal({title:"验证码",text:"不能为空",type:"warning"}); return false;}
+
+        $.post("{:url('water/index/contact')}",$('form').serialize(),function(re){
+            if(re.code==1){
+                swal({title:"成功",text:re.msg,type:"success"});
+                $('form')[0].reset();
+            }else{
+                swal({title:"失败",text:re.msg,type:"error"});
+            }
+            refreshVerify();
+        });
+    }
+
+    /*刷新验证码*/
+    function refreshVerify() {
+        $('#verify_img').attr("src", "{:url('water/index/getcode')}?id="+Date.parse(new Date())/1000);
+    }
+</script>
+{/block}

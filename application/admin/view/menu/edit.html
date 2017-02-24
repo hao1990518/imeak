@@ -1,0 +1,170 @@
+{extend name="common/base" /}
+{block name="cssFile"}
+{css href="/static/admin/css/plugins/chosen/chosen.css"}
+{/block}
+{block name="main"}
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li class=""><a href="{:url('Menu/index')}"><i class="fa fa-list"></i> 菜单列表</a></li>
+                    <li class=""><a href="{:url('Menu/add')}" ><i class="fa fa-plus"></i> 新增菜单</a></li>
+                    <li class="active"><a href="javascript:;" ><i class="fa fa-plus"></i> 编辑菜单[{$data['name']}]</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab-1">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="ibox float-e-margins">
+                                        <div class="ibox-title">
+                                            <h5>编辑 <small>菜单[{$data['name']}]</small></h5>
+                                            <div class="ibox-tools">
+                                                <a class="collapse-link">
+                                                    <i class="fa fa-refresh"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <form class="form-horizontal">
+                                                <input type="hidden" name="__token__" value="{$Request.token}" />
+                                                <input type="hidden" name="id" value="{$data['id']}" />
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">父级菜单</label>
+                                                    <div class="col-sm-8">
+                                                        <select data-placeholder="选择父级..." class="chosen-select" id="parent" style="width:350px;" tabindex="2">
+                                                            <option value="0" hassubinfo="true">顶级</option>
+                                                            {volist name="menus" id="vo"}
+                                                            <option value="{$vo['id']}" hassubinfo="true" {$data['parent_id']==$vo['id']?'selected':''} >{$vo['name']}</option>
+                                                                {if condition="!empty($vo['son'])"}
+                                                                {volist name="vo['son']" id="vv"}
+                                                                <option value="{$vv['id']}" hassubinfo="true" {$data['parent_id']==$vv['id']?'selected':''} > └ {$vv['name']}</option>
+                                                                {/volist}
+                                                                {/if}
+                                                            {/volist}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">名&nbsp;&nbsp;&nbsp;称</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="name" class="form-control" value="{$data['name']}" required="" placeholder="请输入名称" maxlength="50">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">链&nbsp;&nbsp;&nbsp;接</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="url" class="form-control" value="{$data['url']}" placeholder="请输入链接，可忽略">
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">图&nbsp;&nbsp;&nbsp;标</label>
+
+                                                    <div class="col-sm-8">
+                                                        <input type="text" name="ico" class="form-control" value="{$data['ico']}" placeholder="请输入图标代号，可忽略" maxlength="20">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">关联节点</label>
+                                                    <div class="col-sm-8">
+                                                        <select data-placeholder="选择节点..." class="chosen-select" id="rule" style="width:350px;" tabindex="1">
+                                                            <option value="0" hassubinfo="true">无关联</option>
+                                                            {volist name="rules" id="vo"}
+                                                            <option value="{$vo['id']}" hassubinfo="true" {$data['rule']==$vo['id']?'selected':''} >{$vo['title']}&nbsp;&nbsp;&nbsp;[{$vo['name']}]</option>
+                                                            {/volist}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">状&nbsp;&nbsp;&nbsp;态</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="switch">
+                                                            <div class="onoffswitch">
+                                                                <input type="checkbox" class="onoffswitch-checkbox" id="example" {$data['status']?'checked':''}>
+                                                                <label class="onoffswitch-label" for="example">
+                                                                    <span class="onoffswitch-inner"></span>
+                                                                    <span class="onoffswitch-switch"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">排&nbsp;&nbsp;&nbsp;序</label>
+
+                                                    <div class="col-sm-2">
+                                                        <input type="text" name="sort" class="form-control" value="{$data['sort']}" placeholder="越大越靠前" required="" pattern="\d+" maxlength="10">
+                                                    </div>
+                                                </div>
+                                                <div class="hr-line-dashed"></div>
+                                                <div class="form-group">
+                                                    <div class="col-sm-4 col-sm-offset-2">
+                                                        <button class="btn btn-primary" type="submit">保存</button>
+                                                        <a href="{:url('auth/rule')}" class="btn btn-white" type="button">取消</a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{js href="/static/admin/js/plugins/chosen/chosen.jquery.js"}
+<script>
+    $(document).ready(function(){
+        $('form').on('submit',function(){
+            if($("input[name='name']").val()==""){toastr.info('名称不能为空');return false;}
+            if($("input[name='title']").val()==""){toastr.info('标题不能为空');return false;}
+            var status = 0;
+            if($('#example').is(':checked')){
+                status =1;
+            }
+            $.ajax({
+                type:'post',
+                dataType:'json',
+                data:$('form').serialize()+'&parent_id='+$("#parent").val()+'&rule='+$("#rule").val()+'&status='+status,
+                url:"{:url('Menu/edit')}",
+                success:function(re){
+                    if(re.code==1){
+                        layer.confirm(re.msg, {
+                            btn: ['前往列表','继续编辑'] //按钮
+                        }, function(){
+                            window.location.href="{:url('Menu/index')}";
+                        },function(){
+                            window.location.reload();
+                        });
+                    }else{
+                        toastr.error(re.msg);
+                    }
+                },
+                error:function(){
+                    toastr.warning('请稍后再试或联系管理员','网络错误');
+                }
+            });
+            return false;
+        });
+        var config={
+            ".chosen-select":{},
+            ".chosen-select-deselect":{allow_single_deselect:!0},
+            ".chosen-select-no-single":{disable_search_threshold:10},
+            ".chosen-select-no-results":{no_results_text:"Oops, nothing found!"},
+            ".chosen-select-width":{width:"95%"}
+        };
+        for(var selector in config)$(selector).chosen(config[selector]);
+    });
+
+</script>
+{/block}

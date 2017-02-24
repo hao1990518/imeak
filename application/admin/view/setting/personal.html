@@ -1,0 +1,181 @@
+{extend name="common/base" /}
+{block name="cssFile"}
+{css href="/static/admin/css/plugins/datapicker/datepicker3.css"}
+{css href="/static/admin/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css"}
+{/block}
+{block name="main"}
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>个人信息</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-refresh"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+
+                            <div class="col-sm-8">
+                                <p style="font-weight: bold;" class="form-control-static">{$data['username']}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">头&nbsp;&nbsp;像</label>
+
+                            <div class="col-sm-8">
+                                <a href="#modal-xiuxiu" data-toggle="modal">
+                                <img src="{:empty($data['picture'])?'/static/admin/img/default.jpg':$data['picture']}" class="img" name="picture">
+                                </a>
+                                <!--<span class="block m-t-xs">-->
+                                    <!--<a href="#modal-xiuxiu" style="width: 130px;" class="btn btn-warning btn-block btn-sm" data-toggle="modal">修改头像</a>-->
+                                <!--</span>-->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">昵&nbsp;&nbsp;称</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="nickname" value="{$data['nickname']}" class="form-control" placeholder="请输入昵称">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">性&nbsp;&nbsp;别</label>
+
+                            <div class="col-sm-8">
+                                <div class="radio radio-info radio-inline">
+                                    <input type="radio" id="inlineRadio1" value="1" name="sex" {$data['sex']==1?'checked':''}>
+                                    <label for="inlineRadio1"> 男 </label>
+                                </div>
+                                <div class="radio radio-danger radio-inline">
+                                    <input type="radio" id="inlineRadio2" value="2" name="sex" {$data['sex']==2?'checked':''}>
+                                    <label for="inlineRadio2"> 女 </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">生&nbsp;&nbsp;日</label>
+
+                            <div class="col-sm-8">
+                                <div class="input-group date datepicker">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" name="birthday" class="form-control" value="{$data['birthday']}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">联系电话</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="tel" value="{$data['tel']}" class="form-control" placeholder="请输入联系电话">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Q&nbsp;&nbsp;Q</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="qq" value="{$data['qq']}" class="form-control" placeholder="请输入QQ号码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">邮&nbsp;&nbsp;箱</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="email" value="{$data['email']}" class="form-control" placeholder="请输入邮箱">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">联系地址</label>
+
+                            <div class="col-sm-8">
+                                <input type="text" name="address" value="{$data['address']}" class="form-control" placeholder="请输入联系地址">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存</button>
+                                <button class="btn btn-white reset" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="common:xiuxiu" /}
+{/block}
+{block name="js"}
+{js href='/static/admin/js/plugins/datapicker/bootstrap-datepicker.js'}
+{js href='/static/xiuxiu/xiuxiu.js'}
+<script>
+    $(document).ready(function(){
+        $('.datepicker').datepicker();
+//        xiuxiu.setLaunchVars("cropPresets", "196*172");
+        xiuxiu.embedSWF("altContent", 5, '100%', 400,"lite");
+        xiuxiu.onInit = function (id) {
+//            xiuxiu.loadPhoto(["http://open.web.meitu.com/sources/images/1.jpg", "http://open.web.meitu.com/sources/images/2.jpg", "http://open.web.meitu.com/sources/images/3.jpg"]);
+            xiuxiu.setUploadURL("{:url('Upload/head')}");
+            xiuxiu.setUploadType(2);
+            xiuxiu.setUploadDataFieldName("upload_file");
+        };
+
+        xiuxiu.onUploadResponse = function (data) {
+            var obj = eval("("+data+")");
+            if(obj.code==1){
+                var url = obj.url;
+                $('[name="picture"]').attr('src',url);
+                toastr.success(obj.msg);
+                $('#modal-xiuxiu').modal('hide');
+                clearFlash();
+            }else{
+                toastr.error(obj.msg);
+            }
+        };
+
+        xiuxiu.onDebug = function (data) {
+            toastr.warning("错误响应" + data);
+        };
+
+        xiuxiu.onClose = function (id) {
+            //alert(id + "关闭");
+            clearFlash();
+        };
+
+        //保存数据
+        $('form').on('submit',function(){
+            layer.load(2, {shade: false});
+            $.ajax({
+                type:'post',
+                dataType:'json',
+                data:$('form').serialize()+'&picture='+$("img[name='picture']").attr('src'),
+                url:"{:url('Setting/personal')}",
+                success:function(re){
+                    layer.closeAll();
+                    if(re.code==1){
+                        toastr.success(re.msg);
+                    }else{
+                        toastr.error(re.msg);
+                    }
+                },
+                error:function(){
+                    layer.closeAll();
+                    toastr.warning('请稍后再试或联系管理员','网络错误');
+                }
+            });
+            return false;
+        });
+
+    });
+    //清除flash
+    function clearFlash()  {
+        document.getElementById("flashEditorOut").innerHTML='<div id="flashEditorContent"><p><a href="http://www.adobe.com/go/getflashplayer"><img alt="Get Adobe Flash player" src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"></a></p></div>';
+    }
+</script>
+{/block}

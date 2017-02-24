@@ -1,0 +1,15 @@
+{extend name="common/base" /}
+{block name="main"}
+<div id="fh5co-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>{$data['title']}</h2>
+                <div class="fh5co-spacer fh5co-spacer-sm"></div>
+                <p><img src="{$data['picture']}" alt="{$data['abstract']}" style="max-width: 727px;max-height: 550px;" class="img-rounded img-responsive center-block"></p>
+                <p>{$data['content']}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

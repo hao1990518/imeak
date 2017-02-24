@@ -1,0 +1,21 @@
+{volist name="data" key="k" id="vo"}
+<div class="file-box" tag="file{$k}">
+    <div class="file" title="{$vo['name']}" alt="{$vo['name']}" >
+        <a class="corner" style="display: none" val="{$vo['url']}" key="{$k}"><i class="fa fa-times"></i></a>
+        {if condition="$vo['is_img']"}
+            <div class="image" style="cursor: pointer">
+                <img style="margin: auto" class="img-responsive" src="{:ltrim($vo['url'],'.')}">
+            </div>
+        {else/}
+            <div class="icon">
+                <i class="fa fa-file"></i>
+            </div>
+        {/if}
+        <div class="file-name" style="overflow: hidden">
+            <span style="color: #337AB7">{$vo['name']}</span>
+            <br/>
+            <small>上传时间：{:date('Y-m-d H:i:s',$vo['time'])}</small>
+        </div>
+    </div>
+</div>
+{/volist}

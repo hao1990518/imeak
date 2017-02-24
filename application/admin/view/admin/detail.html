@@ -1,0 +1,105 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">{$data['username']}</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-6">
+                <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        <p class="form-control-static"><img src="{$data['picture']?$data['picture']:'/static/admin/img/default.jpg'}" style="max-height: 111px;padding-left: 33px;"></p>
+                    </label>
+                </div>
+                <div class="hr-line-dashed"></div>
+
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">电&nbsp;&nbsp;话：</label>
+                    <div class="col-sm-7">
+                        <p class="form-control-static">{$data['tel']}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">邮&nbsp;&nbsp;箱：</label>
+                    <div class="col-sm-7">
+                        <p class="form-control-static">{$data['email']}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">Q&nbsp;&nbsp;&nbsp;&nbsp;Q：</label>
+                    <div class="col-sm-7">
+                        <p class="form-control-static">{$data['qq']}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">地&nbsp;&nbsp;址：</label>
+                    <div class="col-sm-7">
+                        <p class="form-control-static">{$data['address']}</p>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">昵&nbsp;&nbsp;称：</label>
+                        <div class="col-sm-7">
+                            <p class="form-control-static">{$data['nickname']}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">身&nbsp;&nbsp;份：</label>
+                        <div class="col-sm-7">
+                            <p class="form-control-static">{$data['identity']}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">账号状态：</label>
+                        <div class="col-sm-7">
+                            <p class="form-control-static">{$data['status']==1?'正常':'锁定'}</p>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">登录时间：</label>
+                        <div class="col-sm-7">
+                            <p class="form-control-static">{$data['login_dt']|date='Y-m-d H:i:s',###}</p>
+                        </div>
+                    </div><div class="form-group">
+                        <label class="col-sm-5 control-label">登录IP：</label>
+                        <div class="col-sm-7">
+                            <p class="form-control-static">{$data['login_ip']}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">登录次数：</label>
+                        <div class="col-sm-7">
+                            <p class="form-control-static">{$data['login_num']}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">创建时间：</label>
+                        <div class="col-sm-7">
+                            <p class="form-control-static">{$data['create_dt']|date='Y-m-d H:i:s',###}</p>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="margin-left: 33px;">简&nbsp;&nbsp;介：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static"> {$data['remarks']}</p>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+    </div>
+</div>
