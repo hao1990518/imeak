@@ -63,27 +63,23 @@ class Port {
     public function getJokerText($postObj)
     {
         $ch = curl_init();
-        $url = 'http://apis.baidu.com/showapi_open_bus/showapi_joke/joke_text?page='.rand(1,100);
-        $header = array(
-            'apikey: eabdf5e16bd743ebe901088a9f24bf4f',
-        );
-        // 添加apikey到header
-        curl_setopt($ch, CURLOPT_HTTPHEADER  , $header);
+
+        $url = "http://api.xiaoliaoba.cn/Index/duanzi.html?key=436263d0bc4f3d7a6a73655a01d42a40&count=10&page=".rand(1,6);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         // 执行HTTP请求
         curl_setopt($ch , CURLOPT_URL , $url);
         $res = curl_exec($ch);
         $arr = json_decode($res,true);
         $content = '';
-        foreach($arr['showapi_res_body']['contentlist'] as $k=>$v){
+        foreach($arr['result'] as $k=>$v){
             if($k<5) {
-                $content .= ($k + 1)."：";
-                $content .= $v['text'];
+                $content .= ($k + 1)." {$v['title']}：";
+                $content .= $v['content'];
                 $content .= "\n";
             }
         }
         $Wechat = new Wechat();
-        $Wechat->responseText($postObj,$content);
+        $Wechat->responseText($postObj,htmlspecialchars_decode($content));
     }
 
     public function getJokerPic($postObj)
