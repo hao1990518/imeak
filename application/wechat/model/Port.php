@@ -14,59 +14,42 @@ class Port {
      */
     public function getWeather($postObj)
     {
-//        $city = $this->getCityId($postObj);
-//        $city_code =$city['retData']['cityCode'];
+        $url = "http://wthrcdn.etouch.cn/weather_mini?city={$postObj->Content}";
+//        $url = "http://wthrcdn.etouch.cn/WeatherApi?city={$postObj}";
         $ch = curl_init();
-//        $url = 'http://apis.baidu.com/apistore/weatherservice/recentweathers?cityid='.$city_code;
-        $url = 'http://apis.baidu.com/apistore/weatherservice/recentweathers?cityname='.urlencode($postObj->Content);
-        $header = array(
-            'apikey:eabdf5e16bd743ebe901088a9f24bf4f',
-        );
-        // 添加apikey到header
-        curl_setopt($ch, CURLOPT_HTTPHEADER  , $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
         // 执行HTTP请求
         curl_setopt($ch , CURLOPT_URL , $url);
         $res = curl_exec($ch);
         curl_close($ch);
 
         $arr = json_decode($res,true);
-        $content = "城市：".$arr['retData']['city']
-            ."\n日期：".$arr['retData']['today']['date']."[今天]"
-            ."\n星期：".$arr['retData']['today']['week']
-            ."\n当前温度：".$arr['retData']['today']['curTemp']
-            ."\npm值：".$arr['retData']['today']['aqi']
-            ."\n风向：".$arr['retData']['today']['fengxiang']
-            ."\n风力：".$arr['retData']['today']['fengli']
-            ."\n最高温度：".$arr['retData']['today']['hightemp']
-            ."\n最低温度：".$arr['retData']['today']['lowtemp']
-            ."\n天气状态：".$arr['retData']['today']['type'];
 
+        $content = "城市：{$arr['data']['city']}"
+            ."\n日期：{$arr['data']['forecast'][0]['date']}"
+            ."\n当前温度：{$arr['data']['wendu']}"
+            ."\npm值：{$arr['data']['aqi']}"
+            ."\n风向：{$arr['data']['forecast'][0]['fengxiang']}"
+            ."\n风力：{$arr['data']['forecast'][0]['fengli']}"
+            ."\n最高温度：{$arr['data']['forecast'][0]['high']}"
+            ."\n最低温度：{$arr['data']['forecast'][0]['low']}"
+            ."\n天气状态：{$arr['data']['forecast'][0]['type']}"
+            ."\n温馨提示：{$arr['data']['ganmao']}";
+
+        unset($arr['data']['forecast'][0]);
         $content.="\n\n预报列表：" ."\n◎◎◎◎◎◎◎◎◎◎◎◎";
-        foreach($arr['retData']['forecast'] as $k=>$v){
+        foreach($arr['data']['forecast'] as $k=>$v){
             $content.= "\n\n日期：".$v['date']
-                ."\n星期：".$v['week']
                 ."\n风向：".$v['fengxiang']
                 ."\n风力：".$v['fengli']
-                ."\n最高温度：".$v['hightemp']
-                ."\n最低温度：".$v['lowtemp']
+                ."\n最高温度：".$v['high']
+                ."\n最低温度：".$v['low']
                 ."\n天气状态：".$v['type'];
-            if($k+1 == count($arr['retData']['forecast'])){
+            if($k == count($arr['data']['forecast'])){
                 $content.="\n================";
             }else{
                 $content.="\n------------";
-            }
-        }
-
-        $content.="\n\n今日指标列表：" ."\n⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙";
-        foreach ($arr['retData']['today']['index'] as $k=>$v){
-            $content.= "\n\n指数指标名称：".$v['name']
-                ."\n描述：".$v['details']
-                ."\n等级：".$v['index'];
-            if($k+1 == count($arr['retData']['today']['index'])){
-                $content.="\n================";
-            }else{
-                $content.="\n-----------";
             }
         }
         $Wechat = new Wechat();
