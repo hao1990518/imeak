@@ -16,8 +16,7 @@ class Index extends Base
 {
     public function index()
     {
-        $Auth = new \think\Auth;
-//        $AuthModel = new Auth();
+        $Auth = new \auth\Auth();
         $MenuModel = new Menu();
         $AdminModel = new Admin();
 

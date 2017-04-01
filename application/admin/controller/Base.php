@@ -21,8 +21,8 @@ class Base extends Controller
      * 权限验证
      */
     private function checkAuth(){
-        $AUTH = new \think\Auth;
-        //类库位置应该位于ThinkPHP\Library\Think\
+
+        $AUTH = new \auth\Auth();
         $id = Session::get(config('user_auth_key'));
         if(!$id){
             $this->redirect(url('Login/index'));
