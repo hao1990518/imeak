@@ -14,16 +14,12 @@ return [
     'type'           => 'mysql',
     // 服务器地址
     'hostname'       => '127.0.0.1',
-//    'hostname'       => 'qdm17802178.my3w.com',
     // 数据库名
     'database'       => 'imeak',
-//    'database'       => 'qdm17802178_db',
     // 用户名
     'username'       => 'root',
-//    'username'       => 'qdm17802178',
     // 密码
     'password'       => 'root',
-//    'password'       => 'hao696254',
     // 端口
     'hostport'       => '',
     // 连接dsn

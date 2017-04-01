@@ -4,7 +4,6 @@ namespace app\admin\controller;
 use app\admin\model\Admin;
 use app\admin\model\Menu;
 use think\Cache;
-use think\Request;
 use think\Session;
 
 /**
