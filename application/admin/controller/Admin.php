@@ -22,7 +22,7 @@ class Admin extends Base
         if(Request::instance()->isAjax()){
 
             $AdminModel = new AdminModel();
-            $Auth = new \think\Auth;
+            $Auth = new \auth\Auth();
 
             $tableInfo = get_table_info(); //获取dataTable数据
             //排序
@@ -185,7 +185,7 @@ class Admin extends Base
                 $this->error('编辑失败，请稍后再试或联系管理员');
             }
         }elseif(is_numeric($id) && $id >0){
-            $Auth = new \think\Auth();
+            $Auth = new \auth\Auth();
             //编辑页面视图
             $result = $AdminModel::get(['id'=>$id]); //获取管理员信息
             $groups = $Auth->getGroups($id); //获取权限数据
@@ -242,7 +242,7 @@ class Admin extends Base
                 if($data['id'] == 1){
                     $data['identity'] = '超级管理员';
                 }else{
-                    $Auth = new \think\Auth;
+                    $Auth = new \auth\Auth();
                     $groups = $Auth->getGroups($id); //获取权限
                     $arr = [];
                     foreach ($groups as $kk=>$vv){
