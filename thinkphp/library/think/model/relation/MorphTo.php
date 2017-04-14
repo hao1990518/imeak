@@ -23,21 +23,24 @@ class MorphTo extends Relation
     protected $morphType;
     // 多态别名
     protected $alias;
+    protected $relation;
 
     /**
-     * 架构函数
+     * 构造函数
      * @access public
      * @param Model  $parent    上级模型对象
      * @param string $morphType 多态字段名
      * @param string $morphKey  外键名
      * @param array  $alias     多态别名定义
+     * @param string $relation  关联名
      */
-    public function __construct(Model $parent, $morphType, $morphKey, $alias = [])
+    public function __construct(Model $parent, $morphType, $morphKey, $alias = [], $relation = null)
     {
         $this->parent    = $parent;
         $this->morphType = $morphType;
         $this->morphKey  = $morphKey;
         $this->alias     = $alias;
+        $this->relation  = $relation;
     }
 
     /**
@@ -53,8 +56,13 @@ class MorphTo extends Relation
         // 多态模型
         $model = $this->parseModel($this->parent->$morphType);
         // 主键数据
-        $pk = $this->parent->$morphKey;
-        return (new $model)->relation($subRelation)->find($pk);
+        $pk            = $this->parent->$morphKey;
+        $relationModel = (new $model)->relation($subRelation)->find($pk);
+
+        if ($relationModel) {
+            $relationModel->setParent(clone $this->parent);
+        }
+        return $relationModel;
     }
 
     /**
@@ -115,6 +123,16 @@ class MorphTo extends Relation
     }
 
     /**
+     * 移除关联查询参数
+     * @access public
+     * @return $this
+     */
+    public function removeOption()
+    {
+        return $this;
+    }
+
+    /**
      * 预载入关联查询
      * @access public
      * @param array    $resultSet   数据集
@@ -155,7 +173,11 @@ class MorphTo extends Relation
                         if (!isset($data[$result->$morphKey])) {
                             throw new Exception('relation data not exists :' . $this->model);
                         } else {
-                            $result->setAttr($attr, $data[$result->$morphKey]);
+                            $relationModel = $data[$result->$morphKey];
+                            $relationModel->setParent(clone $result);
+                            $relationModel->isUpdate(true);
+
+                            $result->setAttr($attr, $relationModel);
                         }
                     }
                 }
@@ -207,9 +229,46 @@ class MorphTo extends Relation
         $pk   = $this->parent->{$this->morphKey};
         $data = (new $model)->with($subRelation)->find($pk);
         if ($data) {
+            $data->setParent(clone $result);
             $data->isUpdate(true);
         }
         $result->setAttr(Loader::parseName($relation), $data ?: null);
+    }
+
+    /**
+     * 添加关联数据
+     * @access public
+     * @param Model $model       关联模型对象
+     * @return Model
+     */
+    public function associate($model)
+    {
+        $morphKey  = $this->morphKey;
+        $morphType = $this->morphType;
+        $pk        = $model->getPk();
+
+        $this->parent->setAttr($morphKey, $model->$pk);
+        $this->parent->setAttr($morphType, get_class($model));
+        $this->parent->save();
+
+        return $this->parent->data($this->relation, $model);
+    }
+
+    /**
+     * 注销关联数据
+     * @access public
+     * @return Model
+     */
+    public function dissociate()
+    {
+        $morphKey  = $this->morphKey;
+        $morphType = $this->morphType;
+
+        $this->parent->setAttr($morphKey, null);
+        $this->parent->setAttr($morphType, null);
+        $this->parent->save();
+
+        return $this->parent->data($this->relation, null);
     }
 
     /**
